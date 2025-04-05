@@ -115,7 +115,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🌤 Weather App</h1>
+        <h1>Simple Weather Forecast</h1>
         <p>Enter a city name:</p>
         <input type="text" id="cityInput" placeholder="e.g., Nairobi">
         <br>
@@ -125,10 +125,10 @@
 
     <script>
         function getWeather() {
-    const city = document.getElementById("cityInput").value;
-    const apiKey = "4d129c3692721a911f191859de65b242";
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+            const city = document.getElementById("cityInput").value;
+            const apiKey = "4d129c3692721a911f191859de65b242";
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
 
     // Fetch current weather
     fetch(weatherUrl)
@@ -143,10 +143,9 @@
                 <h2>${current.name}, ${current.sys.country}</h2>
                 <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${current.weather[0].description}">
                 <p><strong>${current.weather[0].description.toUpperCase()}</strong></p>
-                <p>🌡 Temp: <span id="tempVal">${current.main.temp}</span>°<span id="unit">C</span></p>
-                <p>💨 Wind Speed: ${current.wind.speed} m/s</p>
-                <p>💧 Humidity: ${current.main.humidity}%</p>
-                <button onclick="toggleTemp()">Toggle °C/°F</button>
+                <p>Temp: <span id="tempVal">${current.main.temp}</span>°<span id="unit">C</span></p>
+                <p>Wind Speed: ${current.wind.speed} m/s</p>
+                <p>Humidity: ${current.main.humidity}%</p>
                 <h3>5-Day Forecast</h3>
                 <div id="forecast"></div>
             `;
@@ -181,8 +180,8 @@
 function saveRecentCity(city) {
     let recent = JSON.parse(localStorage.getItem("recentCities")) || [];
     if (!recent.includes(city)) {
-        recent.unshift(city); // add to beginning
-        if (recent.length > 5) recent.pop(); // keep only 5
+        recent.unshift(city);
+        if (recent.length > 3) recent.pop(); 
         localStorage.setItem("recentCities", JSON.stringify(recent));
     }
     displayRecentCities();
