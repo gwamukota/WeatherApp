@@ -152,29 +152,6 @@
 
             saveRecentCity(city);
         });
-
-    // Fetch 5-day forecast
-    fetch(forecastUrl)
-        .then(res => res.json())
-        .then(data => {
-            const forecastEl = document.getElementById("forecast");
-            forecastEl.innerHTML = "";
-
-            // Filter forecasts around 12:00 each day
-            const daily = data.list.filter(item => item.dt_txt.includes("12:00:00"));
-
-            daily.forEach(day => {
-                const date = new Date(day.dt_txt).toLocaleDateString();
-                const icon = day.weather[0].icon;
-                forecastEl.innerHTML += `
-                    <div style="margin-bottom: 10px;">
-                        <strong>${date}</strong><br>
-                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png">
-                        <p>${day.main.temp}°C</p>
-                    </div>
-                `;
-            });
-        });
 }
 
 function saveRecentCity(city) {
