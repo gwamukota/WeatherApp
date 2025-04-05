@@ -110,8 +110,6 @@
         margin-top: 10px;
     }
 </style>
-
-
 </head>
 <body>
     <div class="container">
@@ -122,64 +120,66 @@
         <button onclick="getWeather()">Get Weather</button>
         <div id="weatherInfo"></div>
     </div>
-
     <script>
-        function getWeather() {
-            const city = document.getElementById("cityInput").value;
-            const apiKey = "4d129c3692721a911f191859de65b242";
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+  const apiKey = "4d129c3692721a911f191859de65b242";
 
-    // Fetch current weather
-    fetch(weatherUrl)
-        .then(response => {
-            if (!response.ok) throw new Error("City not found");
-            return response.json();
-        })
-        .then(current => {
-            const icon = current.weather[0].icon;
-            const weatherInfo = document.getElementById("weatherInfo");
-            weatherInfo.innerHTML = `
-                <h2>${current.name}, ${current.sys.country}</h2>
-                <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${current.weather[0].description}">
-                <p><strong>${current.weather[0].description.toUpperCase()}</strong></p>
-                <p>Temp: <span id="tempVal">${current.main.temp}</span>°<span id="unit">C</span></p>
-                <p>Wind Speed: ${current.wind.speed} m/s</p>
-                <p>Humidity: ${current.main.humidity}%</p>
-                <h3>5-Day Forecast</h3>
-                <div id="forecast"></div>
-            `;
+  function getWeather() {
+    const city = document.getElementById("cityInput").value.trim();
+    if (!city) return;
 
-            saveRecentCity(city);
-        });
-}
+    const baseUrl = "https://api.openweathermap.org/data/2.5";
+    const params = `?q=${city}&appid=${apiKey}&units=metric`;
 
-function saveRecentCity(city) {
+    fetch(`${baseUrl}/weather${params}`)
+      .then(res => res.ok ? res.json() : Promise.reject("City not found"))
+      .then(data => {
+        const { name, sys, weather, main, wind } = data;
+        const icon = weather[0].icon;
+
+        document.getElementById("weatherInfo").innerHTML = `
+          <h2>${name}, ${sys.country}</h2>
+          <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${weather[0].description}">
+          <p><strong>${weather[0].description.toUpperCase()}</strong></p>
+          <p>Temp: <span id="tempVal">${main.temp}</span>°<span id="unit">C</span></p>
+          <p>Wind Speed: ${wind.speed} m/s</p>
+          <p>Humidity: ${main.humidity}%</p>
+          <h3>5-Day Forecast</h3>
+          <div id="forecast"></div>
+        `;
+
+        saveRecentCity(city);
+      })
+      .catch(err => alert(err));
+  }
+
+  function saveRecentCity(city) {
     let recent = JSON.parse(localStorage.getItem("recentCities")) || [];
     if (!recent.includes(city)) {
-        recent.unshift(city);
-        if (recent.length > 3) recent.pop(); 
-        localStorage.setItem("recentCities", JSON.stringify(recent));
+      recent.unshift(city);
+      if (recent.length > 3) recent = recent.slice(0, 3);
+      localStorage.setItem("recentCities", JSON.stringify(recent));
     }
     displayRecentCities();
-}
+  }
 
-function displayRecentCities() {
-    let recent = JSON.parse(localStorage.getItem("recentCities")) || [];
-    let html = `<h3>Recent Cities</h3><ul>`;
-    recent.forEach(city => {
-        html += `<li style="cursor:pointer;" onclick="loadCity('${city}')">${city}</li>`;
-    });
-    html += `</ul>`;
-    document.getElementById("weatherInfo").innerHTML += html;
-}
+  function displayRecentCities() {
+    const recent = JSON.parse(localStorage.getItem("recentCities")) || [];
+    if (recent.length === 0) return;
 
-function loadCity(city) {
+    const list = recent.map(c => `<li style="cursor:pointer;" onclick="loadCity('${c}')">${c}</li>`).join("");
+    document.getElementById("weatherInfo").innerHTML += `
+      <h3>Recent Cities</h3>
+      <ul>${list}</ul>
+    `;
+  }
+
+  function loadCity(city) {
     document.getElementById("cityInput").value = city;
     getWeather();
-}
+  }
 
-    </script>
-    <script>displayRecentCities();</script>
+  // Load recent cities on page load
+  displayRecentCities();
+</script>
 </body>
 </html>
