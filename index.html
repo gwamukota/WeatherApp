@@ -7,7 +7,7 @@
     <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+        background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
         margin: 0;
         padding: 0;
         display: flex;
@@ -17,23 +17,29 @@
     }
 
     .container {
-        background-color: white;
+        background-color: #ffffff;
         margin-top: 40px;
-        padding: 30px 20px;
-        border-radius: 15px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        width: 90%;
-        max-width: 450px;
+        padding: 25px 20px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        width: 95%;
+        max-width: 500px;
         text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        color: #00796b;
     }
 
     input[type="text"] {
         width: 100%;
         padding: 12px;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         border: 1px solid #ccc;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 16px;
+        box-sizing: border-box;
     }
 
     button {
@@ -41,15 +47,20 @@
         color: white;
         border: none;
         padding: 12px 20px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 16px;
         cursor: pointer;
-        margin-bottom: 20px;
-        transition: background-color 0.2s ease;
+        margin-top: 5px;
+        transition: background-color 0.3s ease;
     }
 
     button:hover {
         background-color: #004d40;
+    }
+
+    #weatherInfo {
+        margin-top: 20px;
+        color: #333;
     }
 
     #forecast {
@@ -60,15 +71,26 @@
     }
 
     #forecast div {
-        background: #f1f1f1;
-        padding: 10px;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background: #f2f2f2;
+        padding: 12px;
+        border-radius: 12px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+    #forecast div:hover {
+        transform: translateY(-3px);
+    }
+
+    #forecast img {
+        width: 60px;
+        height: 60px;
     }
 
     ul {
         list-style: none;
         padding: 0;
+        margin-top: 20px;
     }
 
     ul li {
@@ -76,21 +98,19 @@
         color: #00796b;
         cursor: pointer;
         text-decoration: underline;
-        transition: color 0.2s;
+        font-weight: bold;
+        transition: color 0.2s ease;
     }
 
     ul li:hover {
         color: #004d40;
     }
 
-    h1 {
-        margin-bottom: 10px;
-    }
-
-    img {
-        width: 60px;
+    .temp-toggle {
+        margin-top: 10px;
     }
 </style>
+
 
 </head>
 <body>
@@ -157,21 +177,7 @@
             });
         });
 }
-function toggleTemp() {
-    const tempSpan = document.getElementById("tempVal");
-    const unitSpan = document.getElementById("unit");
-    let temp = parseFloat(tempSpan.innerText);
 
-    if (unitSpan.innerText === "C") {
-        temp = (temp * 9/5) + 32;
-        unitSpan.innerText = "F";
-    } else {
-        temp = (temp - 32) * 5/9;
-        unitSpan.innerText = "C";
-    }
-
-    tempSpan.innerText = temp.toFixed(1);
-}
 function saveRecentCity(city) {
     let recent = JSON.parse(localStorage.getItem("recentCities")) || [];
     if (!recent.includes(city)) {
