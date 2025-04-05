@@ -57,36 +57,99 @@
 
     <script>
         function getWeather() {
-            const city = document.getElementById("cityInput").value;
-            const apiKey = "4d129c3692721a911f191859de65b242";
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    const city = document.getElementById("cityInput").value;
+    const apiKey = "4d129c3692721a911f191859de65b242";
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
 
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const icon = data.weather[0].icon;
-                    const weatherInfo = document.getElementById("weatherInfo");
-                    weatherInfo.innerHTML = `
-                        <h2>${data.name}, ${data.sys.country}</h2>
-                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${data.weather[0].description}">
-                        <p><strong>${data.weather[0].description.toUpperCase()}</strong></p>
-                        <p>🌡 Temperature: ${data.main.temp}°C</p>
-                        <p>🤒 Feels Like: ${data.main.feels_like}°C</p>
-                        <p>💨 Wind Speed: ${data.wind.speed} m/s</p>
-                        <p>💧 Humidity: ${data.main.humidity}%</p>
-                    `;
-                })
-                .catch(error => {
-                    console.error("Error fetching weather data:", error);
-                    const weatherInfo = document.getElementById("weatherInfo");
-                    weatherInfo.innerHTML = `<p>❌ Failed to fetch weather data: ${error.message}</p>`;
-                });
-        }
+    // Fetch current weather
+    fetch(weatherUrl)
+        .then(response => {
+            if (!response.ok) throw new Error("City not found");
+            return response.json();
+        })
+        .then(current => {
+            const icon = current.weather[0].icon;
+            const weatherInfo = document.getElementById("weatherInfo");
+            weatherInfo.innerHTML = `
+                <h2>${current.name}, ${current.sys.country}</h2>
+                <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${current.weather[0].description}">
+                <p><strong>${current.weather[0].description.toUpperCase()}</strong></p>
+                <p>🌡 Temp: <span id="tempVal">${current.main.temp}</span>°<span id="unit">C</span></p>
+                <p>💨 Wind Speed: ${current.wind.speed} m/s</p>
+                <p>💧 Humidity: ${current.main.humidity}%</p>
+                <button onclick="toggleTemp()">Toggle °C/°F</button>
+                <h3>5-Day Forecast</h3>
+                <div id="forecast"></div>
+            `;
+
+            saveRecentCity(city);
+        });
+
+    // Fetch 5-day forecast
+    fetch(forecastUrl)
+        .then(res => res.json())
+        .then(data => {
+            const forecastEl = document.getElementById("forecast");
+            forecastEl.innerHTML = "";
+
+            // Filter forecasts around 12:00 each day
+            const daily = data.list.filter(item => item.dt_txt.includes("12:00:00"));
+
+            daily.forEach(day => {
+                const date = new Date(day.dt_txt).toLocaleDateString();
+                const icon = day.weather[0].icon;
+                forecastEl.innerHTML += `
+                    <div style="margin-bottom: 10px;">
+                        <strong>${date}</strong><br>
+                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png">
+                        <p>${day.main.temp}°C</p>
+                    </div>
+                `;
+            });
+        });
+}
+function toggleTemp() {
+    const tempSpan = document.getElementById("tempVal");
+    const unitSpan = document.getElementById("unit");
+    let temp = parseFloat(tempSpan.innerText);
+
+    if (unitSpan.innerText === "C") {
+        temp = (temp * 9/5) + 32;
+        unitSpan.innerText = "F";
+    } else {
+        temp = (temp - 32) * 5/9;
+        unitSpan.innerText = "C";
+    }
+
+    tempSpan.innerText = temp.toFixed(1);
+}
+function saveRecentCity(city) {
+    let recent = JSON.parse(localStorage.getItem("recentCities")) || [];
+    if (!recent.includes(city)) {
+        recent.unshift(city); // add to beginning
+        if (recent.length > 5) recent.pop(); // keep only 5
+        localStorage.setItem("recentCities", JSON.stringify(recent));
+    }
+    displayRecentCities();
+}
+
+function displayRecentCities() {
+    let recent = JSON.parse(localStorage.getItem("recentCities")) || [];
+    let html = `<h3>Recent Cities</h3><ul>`;
+    recent.forEach(city => {
+        html += `<li style="cursor:pointer;" onclick="loadCity('${city}')">${city}</li>`;
+    });
+    html += `</ul>`;
+    document.getElementById("weatherInfo").innerHTML += html;
+}
+
+function loadCity(city) {
+    document.getElementById("cityInput").value = city;
+    getWeather();
+}
+
     </script>
+    <script>displayRecentCities();</script>
 </body>
 </html>
