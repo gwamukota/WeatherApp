@@ -7,12 +7,12 @@ WeatherApp is a simple web-based application that displays weather information t
 WeatherApp/
 ├── index.html    # Main HTML file
 ```
-##Features
+## Features
 
 Clean and simple UI
 Potential for integration with real-time weather APIs (e.g., OpenWeatherMap)
 
-##Getting Started
+## Getting Started
 To run the app locally:
 
 - Clone the Repository
@@ -26,15 +26,15 @@ To run the app locally:
 - Frontend: HTML, CSS, JavaScript
 - Deployment: Netlify and Vercel
 - 
-##Future Improvements
+## Future Improvements
 Connect to an API like OpenWeatherMap or WeatherAPI for real-time weather data
 - Add CSS styling for a more polished UI
 - Add geolocation support to detect user's location automatically
 - Make the layout responsive for mobile users
 - Implement dark mode
 
-##Author
+## Author
 - Gwamukota 
 
-##License
+## License
 This project is open source and available under the MIT License.
